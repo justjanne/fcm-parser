@@ -1,0 +1,7 @@
+/.idea
+__pycache__
+*.iml
+
+# Copyrighted sample files used for validation
+/samples/brother
+/samples/community
