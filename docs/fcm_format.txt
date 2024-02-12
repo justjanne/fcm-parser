@@ -1,0 +1,103 @@
+fcm_file {
+    1 file_header {
+        1 format_identifier: string = ""
+        2 file_version: string
+        3 content_id: u32
+        4 short_name: u8[]
+        5 long_name: u8[]
+        6 author_name: u8[]
+        7 copyright: u8[]
+        8 thumbnail_block_size_width: i32
+        9 thumbnail_block_size_height: i32
+        10 thumbnail_bytes: u8[]
+        11 storage_machine_model_id: string = ""
+        12 save_machine_ver: u32
+        13 file_type: u32
+    }
+    2 cut_data_header {
+        1 cutting_mat_id: u32
+        2 cut_area_width: u32
+        3 cut_area_height: u32
+        4 seam_allowance_width: u32
+        6 align_mark_needed: boolean
+        7 align_flag: u32
+        8 align_mark_count: u32
+        9 align_mark1_x: i32
+        10 align_mark1_y: i32
+        11 align_mark2_x: i32
+        12 align_mark2_y: i32
+        13 align_mark3_x: i32
+        14 align_mark3_y: i32
+        15 align_mark4_x: i32
+        16 align_mark4_y: i32
+    }
+    3 piece_table_header {
+        6 piece_header_section[]: piece_header_section {
+            1 piece_width_before_affine_transformation: i32
+            2 piece_height_before_affine_transformation: i32
+            3 affine_transformation_matrix_a11: f32
+            4 affine_transformation_matrix_a21: f32
+            5 affine_transformation_matrix_a12: f32
+            6 affine_transformation_matrix_a22: f32
+            7 affine_transformation_matrix_a13: f32
+            8 affine_transformation_matrix_a23: f32
+            9 expansion_limit_value: i32
+            10 reduction_limit_value: i32
+            11 label_info: i32
+            12 piece_label: i32[] (packed)
+            13 license_design: bool
+            14 seam_allowance: bool
+            15 prohibition_of_seam_allowance_setting: bool
+            16 no_aspect_ratio_change_prohibited: bool
+            17 judge_by_using_perfect_mask_at_auto_layout: bool
+            18 test_pattern: bool
+            19 prohibition_of_edit: bool
+            20 prohibition_of_tool: bool
+            21 path_header_section: path_header_section[] {
+                1 open_or_close_path: bool
+                2 path_to_cut: bool
+                3 path_to_draw: bool
+                4 target_seam_allowance: bool
+                5 rhinestone: bool
+                6 paint_the_face_when_drawing: bool
+                7 correction_by_scanner_correction_value: bool
+                8 add_additional_line_at_draw: bool
+                9 line_segment: line_segment_section[] {
+                    1 start_point_coordiantes_x: i32
+                    2 start_point_coordiantes_y: i32
+                    3 outline_list: outline[] {
+                        1 is_line: bool
+                        2 is_bezier: bool
+                        3 line_or_bezier: segment_line_or_bezier[] {
+                            1 line: segment_line? {
+                                1 end_x: i32
+                                2 end_y: i32
+                            }
+                            2 bezier: segment_bezier? {
+                                1 control1_x: i32
+                                2 control1_y: i32
+                                3 control2_x: i32
+                                4 control2_y: i32
+                                5 end_x: i32
+                                6 end_y: i32
+                            }
+                        }
+                    }
+                }
+                10 rhinestone_segment: rhinestone_segment_section[] {
+                    1 attribute: u32
+                    2 count: u32
+                    3 radius: u32
+                    4 point: point[] {
+                        1 x: i32
+                        2 y: i32
+                    }
+                }
+                11 is_perforating: bool
+                12 is_emboss: bool
+                13 is_foil: bool
+                14 is_only_for_draw: bool
+            }
+        }
+    }
+}
