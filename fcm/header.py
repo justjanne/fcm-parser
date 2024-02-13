@@ -2,7 +2,7 @@ import math
 from typing import Tuple, NamedTuple
 
 from fcm.debug import debug_value
-from fcm.util import read_bytes, read_utf16_str, read_uint, DEBUG_assert_expected
+from fcm.util import read_bytes, read_utf16_str, read_uint, DEBUG_assert_expected, read_int
 
 
 class FcmHeader(NamedTuple):
@@ -92,9 +92,9 @@ def read_fcm_header(buffer: bytes, offset: int = 0) -> Tuple[int, FcmHeader]:
     offset, unknown12 = read_uint(buffer, 4, offset)
     DEBUG_assert_expected("header unknown12", unknown12, [0x00000000, 0x00000002])
 
-    offset, unknown13a = read_uint(buffer, 4, offset)
+    offset, unknown13a = read_int(buffer, 4, offset)
     DEBUG_assert_expected("header unknown13a", unknown13a, [0x00000000, 0xff000000])
-    offset, unknown13b = read_uint(buffer, 4, offset)
+    offset, unknown13b = read_int(buffer, 4, offset)
     DEBUG_assert_expected("header unknown13b", unknown13b, [0x00ffffff, 0xffffffff])
 
     offset, _ = read_bytes(buffer, thumbnail_byte_length, offset)

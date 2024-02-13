@@ -27,6 +27,8 @@ def read_utf16_str(buffer: bytes, offset: int = 0) -> [int, bytes]:
 
 
 def DEBUG_assert_expected(context: str, value, expected: list):
+    if type(value) is int:
+        value = 0xFFFFFFFF & value
     if value not in expected:
         friendly_value = str(value)
         if type(value) is int:

@@ -11,7 +11,7 @@ class Piece(NamedTuple):
     unknown2: int
     unknown3: Tuple[int, int]
     unknown4: int
-    unknown5: Tuple[float, float, float, float, float, float]
+    transform: Tuple[float, float, float, float, float, float]
     unknown6: int
     unknown7: int
     unknown8: int
@@ -34,20 +34,15 @@ def read_piece(buffer: bytes, offset: int = 0) -> Tuple[int, Piece]:
     DEBUG_assert_expected("piece unknown4", unknown4, [0x00000001])
 
     # These are probably the align matrix values? seem to be a few correlated floats
-    offset, unknown5a = read_f32(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown5", unknown5a, [1.0, 0.9996899366378784])
-    offset, unknown5b = read_f32(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown5b", unknown5b, [0.0, 0.0011049534659832716])
-    offset, unknown5c = read_f32(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown5c", unknown5c, [0.0])
-    offset, unknown5d = read_f32(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown5d", unknown5d, [1.0, 1.007078766822815, ])
-    offset, unknown5e = read_f32(buffer, 4, offset)
-    offset, unknown5f = read_f32(buffer, 4, offset)
-    debug_value("piece unknown5", (unknown5a, unknown5b, unknown5c, unknown5d))
+    offset, transform1 = read_f32(buffer, 4, offset)
+    offset, transform2 = read_f32(buffer, 4, offset)
+    offset, transform3 = read_f32(buffer, 4, offset)
+    offset, transform4 = read_f32(buffer, 4, offset)
+    offset, transform5 = read_f32(buffer, 4, offset)
+    offset, transform6 = read_f32(buffer, 4, offset)
 
     offset, unknown6 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown7", unknown6, [0x00000000])
+    DEBUG_assert_expected("piece unknown6", unknown6, [0x00000000])
 
     offset, unknown7 = read_uint(buffer, 4, offset)
     DEBUG_assert_expected("piece unknown7", unknown7, [0x00000000])
@@ -78,7 +73,7 @@ def read_piece(buffer: bytes, offset: int = 0) -> Tuple[int, Piece]:
         unknown2,
         (unknown3a, unknown3b),
         unknown4,
-        (unknown5a, unknown5b, unknown5c, unknown5d, unknown5e, unknown5f),
+        (transform1, transform2, transform3, transform4, transform5, transform6),
         unknown6,
         unknown7,
         unknown8,

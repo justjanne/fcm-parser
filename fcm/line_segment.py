@@ -1,7 +1,7 @@
 from typing import NamedTuple, Tuple, List
 
 from fcm.outline import read_outline, Outline
-from fcm.util import read_uint
+from fcm.util import read_int
 
 
 class LineSegment(NamedTuple):
@@ -10,8 +10,8 @@ class LineSegment(NamedTuple):
 
 
 def read_line_segment(buffer: bytes, count: int, offset: int = 0) -> Tuple[int, LineSegment]:
-    offset, startx = read_uint(buffer, 4, offset)
-    offset, starty = read_uint(buffer, 4, offset)
+    offset, startx = read_int(buffer, 4, offset)
+    offset, starty = read_int(buffer, 4, offset)
 
     outlines = []
     for i in range(0, count):
