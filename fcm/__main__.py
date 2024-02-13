@@ -20,7 +20,7 @@ def try_read(name: str):
 
 
 def generate_svg(out: TextIO, data: FcmFile):
-    out.write('<svg viewBox="0 0 {0} {1}" width="{2}mm" height="{3}mm" xmlns="http://www.w3.org/2000/svg">\n'.format(
+    out.write('<svg viewBox="0 0 {0} {1}" xmlns="http://www.w3.org/2000/svg">\n'.format(
         data.cut_data.cut_width,
         data.cut_data.cut_height,
         data.cut_data.cut_width / 100.0,
@@ -50,13 +50,20 @@ def generate_svg(out: TextIO, data: FcmFile):
                                 point.control2[0], point.control2[1],
                                 point.end[0], point.end[1]
                             )
-                out.write('    <path fill="none" stroke="#000000" stroke-width="100" d="{0}" />\n'.format(path_data))
+                out.write('    <path fill="none" stroke="#000000" stroke-width="30" d="{0}" />\n'.format(path_data))
         out.write("  </g>\n")
     out.write("</svg>\n")
+
+def convert_fcm(name: str):
+    with open(name, "rb") as file_in:
+        fcm = read_fcm_file(file_in.read())
+    with open(name.replace(".fcm", "") + ".svg", "w") as file_out:
+        generate_svg(file_out, fcm)
 
 
 if __name__ == "__main__":
     for dirname in os.listdir("samples/"):
-        for filename in os.listdir("samples/"+dirname):
-            try_read("samples/"+dirname+"/"+filename)
-    debug_print()
+        for filename in os.listdir("samples/" + dirname):
+            if filename.endswith(".fcm"):
+                try_read("samples/"+dirname+"/"+filename)
+            #convert_fcm("samples/"+dirname+"/"+filename)

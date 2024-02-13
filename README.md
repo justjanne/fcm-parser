@@ -12,4 +12,8 @@ Current Status:
 - Should be enough to build a rudimentary fcm viewer
 - 27 unknown parameters left to discover
 
+SVG to FCM:
+- https://stackoverflow.com/questions/734076/how-to-best-approximate-a-geometrical-arc-with-a-bezier-curve
+- https://stackoverflow.com/questions/3162645/convert-a-quadratic-bezier-to-a-cubic-one
+
 [fcm_format.txt]: docs/fcm_format.txt

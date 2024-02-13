@@ -57,7 +57,7 @@ def read_fcm_header(buffer: bytes, offset: int = 0) -> Tuple[int, FcmHeader]:
     DEBUG_assert_expected("header unknown2b", unknown2b, [0x00000000, 0x000004ee, 0x0000045e, 0x0000063e])
 
     offset, unknown4 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("header unknown5", unknown4, [0x00000000])
+    DEBUG_assert_expected("header unknown4", unknown4, [0x00000000])
 
     offset, unknown5 = read_uint(buffer, 4, offset)
     DEBUG_assert_expected("header unknown5", unknown5, [0x0000003e])
