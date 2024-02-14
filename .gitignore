@@ -5,3 +5,4 @@ __pycache__
 # Copyrighted sample files used for validation
 /samples/brother
 /samples/community
+/generated
