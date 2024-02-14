@@ -5,7 +5,7 @@ from fcm.header import read_fcm_header, FcmHeader
 
 
 class FcmFile(NamedTuple):
-    file_header: FcmHeader
+    header: FcmHeader
     cut_data: CutData
 
 

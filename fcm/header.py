@@ -8,7 +8,8 @@ from fcm.util import read_bytes, read_utf16_str, read_uint, DEBUG_assert_expecte
 class FcmHeader(NamedTuple):
     format_identifier: str
     file_version: str
-    content_id: bytes
+    model: bytes
+    serial: bytes
     short_name: str
     long_name: str
     author_name: str
@@ -39,7 +40,8 @@ def read_fcm_header(buffer: bytes, offset: int = 0) -> Tuple[int, FcmHeader]:
     offset, format_identifier = read_bytes(buffer, 4, offset)
     offset, file_version = read_bytes(buffer, 4, offset)
     debug_value("file_version", file_version)
-    offset, content_id = read_bytes(buffer, 8, offset)
+    offset, model = read_bytes(buffer, 4, offset)
+    offset, serial = read_bytes(buffer, 4, offset)
 
     offset, short_name = read_bytes(buffer, 8, offset)
     offset, long_name = read_utf16_str(buffer, offset)
@@ -81,10 +83,11 @@ def read_fcm_header(buffer: bytes, offset: int = 0) -> Tuple[int, FcmHeader]:
     offset, unknown9 = read_uint(buffer, 4, offset)
     DEBUG_assert_expected("header unknown9", unknown9, [0x00000000, 0x00000420])
 
+    # FIXME
     offset, unknown10a = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("header unknown10a", unknown10a, [0x00000000, 0x00001625, 0x00000ec4])
+    DEBUG_assert_expected("header unknown10a", unknown10a, [0x00000000, 0x00001625, 0x00000ec4, 0x00001d87])
     offset, unknown10b = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("header unknown10b", unknown10b, [0x00000000, 0x00001625, 0x00000ec4])
+    DEBUG_assert_expected("header unknown10b", unknown10b, [0x00000000, 0x00001625, 0x00000ec4, 0x00001d87])
 
     offset, unknown11 = read_uint(buffer, 4, offset)
     DEBUG_assert_expected("header unknown11", unknown11, [0x00000000, 0x00000002])
@@ -107,7 +110,8 @@ def read_fcm_header(buffer: bytes, offset: int = 0) -> Tuple[int, FcmHeader]:
     return offset, FcmHeader(
         format_identifier,
         file_version,
-        content_id,
+        model,
+        serial,
         short_name.decode("ascii").split("\x00", maxsplit=1)[0],
         long_name.decode("utf-16-le"),
         author_name.decode("utf-16-le"),

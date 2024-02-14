@@ -1,6 +1,5 @@
 from typing import NamedTuple, Tuple, List, Optional
 
-from fcm.debug import debug_value
 from fcm.path import Path, read_path
 from fcm.util import read_uint, DEBUG_assert_expected, read_f32, read_bytes
 
@@ -47,6 +46,8 @@ def read_piece(buffer: bytes, offset: int = 0) -> Tuple[int, Piece]:
     offset, unknown7 = read_uint(buffer, 4, offset)
     DEBUG_assert_expected("piece unknown7", unknown7, [0x00000000])
 
+    # FIXME
+    # 0x00000000 means closed, #0x00000004 means it's an open path. But why?
     offset, unknown8 = read_uint(buffer, 4, offset)
     DEBUG_assert_expected("piece unknown8", unknown8, [0x00000004, 0x00000000])
 

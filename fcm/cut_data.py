@@ -9,8 +9,7 @@ class CutData(NamedTuple):
     mat_id: int
     cut_width: int
     cut_height: int
-    # FIXME
-    unknown1: int
+    seam_allowance_width: int
     piece_offsets: List[int]
     piece_ids: List[int]
     pieces: List[Piece]
@@ -21,10 +20,7 @@ def read_cut_data(buffer: bytes, offset: int = 0) -> Tuple[int, CutData]:
     offset, cut_width = read_uint(buffer, 4, offset)
     offset, cut_height = read_uint(buffer, 4, offset)
     debug_value("mat_id,cut_width,cut_height", (mat_id, cut_width, cut_height))
-
-    offset, unknown1 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("cut_data unknown1", unknown1, [0x000007d0, 0x000002bc])
-
+    offset, seam_allowance_width = read_uint(buffer, 4, offset)
     offset, piece_offset_count = read_uint(buffer, 4, offset)
     piece_offsets = []
     for i in range(0, piece_offset_count):
@@ -48,7 +44,7 @@ def read_cut_data(buffer: bytes, offset: int = 0) -> Tuple[int, CutData]:
         mat_id,
         cut_width,
         cut_height,
-        unknown1,
+        seam_allowance_width,
         piece_offsets,
         piece_ids,
         pieces

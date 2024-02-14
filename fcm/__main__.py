@@ -2,6 +2,7 @@ import os
 import sys
 from typing import TextIO
 
+from fcm.debug import debug_print
 from fcm.file import read_fcm_file, FcmFile
 
 
@@ -62,8 +63,8 @@ def convert_fcm(name: str):
 
 
 if __name__ == "__main__":
-    for dirname in os.listdir("samples/"):
-        for filename in os.listdir("samples/" + dirname):
+    for directory in sorted(os.listdir("samples/")):
+        for filename in sorted(os.listdir("samples/"+directory)):
             if filename.endswith(".fcm"):
-                try_read("samples/"+dirname+"/"+filename)
-            #convert_fcm("samples/"+dirname+"/"+filename)
+                convert_fcm("samples/"+directory+"/"+filename)
+    debug_print()
