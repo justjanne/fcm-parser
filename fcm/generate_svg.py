@@ -35,9 +35,6 @@ def generate_svg(out: TextIO, data: FcmFile):
                                 point.control2[0], point.control2[1],
                                 point.end[0], point.end[1]
                             )
-                out.write('    <path fill="none" stroke-width="30" data-tool="{0}" d="{1}" />\n'.format(
-                    ",".join([str(flag.name) for flag in path.tool]),
-                    path_data,
-                ))
+                out.write('    <path fill="none" stroke="#000000" stroke-width="30" d="{0}" />\n'.format(path_data))
         out.write("  </g>\n")
     out.write("</svg>\n")
