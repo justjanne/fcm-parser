@@ -22,13 +22,12 @@ class PathTool(IntFlag):
 
 
 def read_path_tool(buffer: bytes, offset: int = 0) -> tuple[int, PathTool]:
-    offset, data = read_bytes(buffer, 4, offset)
+    offset, length = read_uint(buffer, 4, offset)
+    offset, data = read_bytes(buffer, length, offset)
     return offset, PathTool.from_bytes(data, byteorder='little', signed=False)
 
 
 class PathHeaderSection(NamedTuple):
-    # FIXME
-    unknown1: any
     rhinestone_diameter: int
     tool: PathTool
     line_segment: LineSegmentSection | None
@@ -36,9 +35,6 @@ class PathHeaderSection(NamedTuple):
 
 
 def read_path_header_section(buffer: bytes, offset: int = 0) -> tuple[int, PathHeaderSection]:
-    offset, unknown1 = read_bytes(buffer, 4, offset)
-    debug_value("path unknown1", unknown1.hex())
-
     offset, tool = read_path_tool(buffer, offset)
     offset, outline_count = read_uint(buffer, 4, offset)
     offset, rhinestone_count = read_uint(buffer, 4, offset)
@@ -54,7 +50,6 @@ def read_path_header_section(buffer: bytes, offset: int = 0) -> tuple[int, PathH
         rhinestones.append(rhinestone)
 
     return offset, PathHeaderSection(
-        unknown1,
         rhinestone_radius,
         tool,
         line_segment,
