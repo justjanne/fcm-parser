@@ -1,9 +1,9 @@
 from enum import IntFlag
 from typing import NamedTuple
 
-from fcm.segment_bezier import SegmentBezier, read_segment_bezier
-from fcm.segment_line import SegmentLine, read_segment_line
-from fcm.util import read_uint, read_bytes
+from ._util import read_uint, read_bytes
+from .segment_bezier import SegmentBezier, read_segment_bezier
+from .segment_line import SegmentLine, read_segment_line
 
 
 class OutlineType(IntFlag):

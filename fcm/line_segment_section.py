@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
-from fcm.outline import read_outline, Outline
-from fcm.util import read_int
+from ._util import read_int
+from .outline import read_outline, Outline
 
 
 class LineSegmentSection(NamedTuple):

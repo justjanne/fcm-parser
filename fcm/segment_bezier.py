@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from fcm.util import read_int
+from ._util import read_int
 
 
 class SegmentBezier(NamedTuple):

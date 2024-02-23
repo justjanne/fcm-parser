@@ -1,8 +1,8 @@
 from typing import NamedTuple
 
-from fcm.cut_data_header import CutDataHeader, read_cut_data_header
-from fcm.file_header import FileHeader, read_file_header
-from fcm.piece_table_header import PieceTableHeader, read_piece_table_header
+from .cut_data_header import CutDataHeader, read_cut_data_header
+from .file_header import FileHeader, read_file_header
+from .piece_table_header import PieceTableHeader, read_piece_table_header
 
 
 class FcmFile(NamedTuple):

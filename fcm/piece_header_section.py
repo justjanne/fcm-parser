@@ -1,8 +1,10 @@
+import struct
 from enum import IntFlag
 from typing import NamedTuple
 
-from fcm.path_header_section import PathHeaderSection, read_path_header_section
-from fcm.util import read_uint, DEBUG_assert_expected, read_f32, read_bytes, read_bool
+from ._util import read_uint, read_f32, read_bytes
+from ._util_debug import debug_value
+from .path_header_section import PathHeaderSection, read_path_header_section
 
 
 class PieceRestrictions(IntFlag):
@@ -23,32 +25,31 @@ def read_piece_restrictions(buffer: bytes, offset: int = 0) -> tuple[int, PieceR
 
 class PieceHeaderSection(NamedTuple):
     # FIXME
-    unknown1: int
-    unknown2: int
+    unknown1: any
+    unknown2: any
     width: int
     height: int
-    unknown3: int
+    unknown3: any
     transform: tuple[float, float, float, float, float, float]
     expansion_limit_value: int
     reduction_limit_value: int
     restrictions: PieceRestrictions
-    unknown4: int
     label: str | None
     paths: list[PathHeaderSection]
 
 
 def read_piece_header_section(buffer: bytes, offset: int = 0) -> tuple[int, PieceHeaderSection]:
-    offset, unknown1 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown1", unknown1, [0x00000000])
+    offset, unknown1 = read_bytes(buffer, 4, offset)
+    debug_value("piece unknown1", unknown1.hex())
 
-    offset, unknown2 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown2", unknown2, [0x00000000])
+    offset, unknown2 = read_bytes(buffer, 4, offset)
+    debug_value("piece unknown2", unknown1.hex())
 
     offset, width = read_uint(buffer, 4, offset)
     offset, height = read_uint(buffer, 4, offset)
 
-    offset, unknown3 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown3", unknown3, [0x00000001])
+    offset, unknown3 = read_bytes(buffer, 4, offset)
+    debug_value("piece unknown3", unknown1.hex())
 
     offset, transformA11 = read_f32(buffer, 4, offset)
     offset, transformA21 = read_f32(buffer, 4, offset)
@@ -58,28 +59,20 @@ def read_piece_header_section(buffer: bytes, offset: int = 0) -> tuple[int, Piec
     offset, transformA23 = read_f32(buffer, 4, offset)
 
     offset, expansion_limit_value = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("piece expansion_limit_value", expansion_limit_value, [0x00000000])
-
     offset, reduction_limit_value = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("piece expansion_limit_value", expansion_limit_value, [0x00000000])
-
     offset, restrictions = read_uint(buffer, 4, offset)
 
-    # modifying this fails parsing, probably offset/size/etc?
-    offset, unknown4 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown4", unknown4, [0x00000004])
-
-    offset, label_info = read_bool(buffer, 1, offset)
-    offset, label = read_bytes(buffer, 3, offset)
-    if label_info:
-        label = label.decode("ascii")
-    else:
-        label = None
+    offset, label_length = read_uint(buffer, 4, offset)
+    offset, label_data = read_bytes(buffer, label_length, offset)
+    has_label, label_text = struct.unpack('?3s', label_data)
+    label = label_text.decode("ascii") if has_label else None
 
     offset, path_count = read_uint(buffer, 4, offset)
     paths = []
     for i in range(0, path_count):
-        offset, path = read_path_header_section(buffer, offset)
+        offset, path_length = read_uint(buffer, 4, offset)
+        _, path = read_path_header_section(buffer, offset)
+        offset += path_length
         paths.append(path)
 
     return offset, PieceHeaderSection(
@@ -92,7 +85,6 @@ def read_piece_header_section(buffer: bytes, offset: int = 0) -> tuple[int, Piec
         expansion_limit_value,
         reduction_limit_value,
         restrictions,
-        unknown4,
         label,
         paths
     )

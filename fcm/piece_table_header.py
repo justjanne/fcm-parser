@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
-from fcm.piece_header_section import PieceHeaderSection, read_piece_header_section
-from fcm.util import read_uint
+from ._util import read_uint
+from .piece_header_section import PieceHeaderSection, read_piece_header_section
 
 
 class PieceTableHeader(NamedTuple):

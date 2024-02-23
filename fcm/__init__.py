@@ -1,6 +1,6 @@
-from fcm.fcm_file import FcmFile, read_fcm_file
-from fcm.generate_svg import generate_svg
-from fcm.util_debug import debug_value
+from ._util_debug import debug_value
+from .fcm_file import FcmFile, read_fcm_file
+from .generate_svg import generate_svg
 
 
 def read_fcm(name: str) -> FcmFile:

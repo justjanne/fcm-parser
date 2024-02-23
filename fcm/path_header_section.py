@@ -1,9 +1,10 @@
 from enum import IntFlag
 from typing import NamedTuple
 
-from fcm.line_segment_section import read_line_segment_section, LineSegmentSection
-from fcm.segment_line import read_segment_line, SegmentLine
-from fcm.util import read_uint, DEBUG_assert_expected, read_bytes
+from ._util import read_uint, read_bytes
+from ._util_debug import debug_value
+from .line_segment_section import read_line_segment_section, LineSegmentSection
+from .segment_line import read_segment_line, SegmentLine
 
 
 class PathTool(IntFlag):
@@ -27,24 +28,23 @@ def read_path_tool(buffer: bytes, offset: int = 0) -> tuple[int, PathTool]:
 
 class PathHeaderSection(NamedTuple):
     # FIXME
-    unknown1: int
-    unknown2: int
+    unknown1: any
+    unknown2: any
     tool: PathTool
     line_segment: LineSegmentSection | None
     rhinestone_segments: list[SegmentLine]
 
 
 def read_path_header_section(buffer: bytes, offset: int = 0) -> tuple[int, PathHeaderSection]:
-    # length of path in bytes
-    offset, _ = read_uint(buffer, 4, offset)
-    offset, unknown1 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("path unknown1", unknown1, [0x00000004])
+    offset, unknown1 = read_bytes(buffer, 4, offset)
+    debug_value("path unknown1", unknown1.hex())
 
     offset, tool = read_path_tool(buffer, offset)
     offset, outline_count = read_uint(buffer, 4, offset)
     offset, rhinestone_count = read_uint(buffer, 4, offset)
 
-    offset, unknown2 = read_uint(buffer, 4, offset)
+    offset, unknown2 = read_bytes(buffer, 4, offset)
+    debug_value("path unknown2", unknown2.hex())
 
     line_segment = None
     if outline_count > 0:

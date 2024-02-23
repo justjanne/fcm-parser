@@ -1,6 +1,6 @@
 from typing import TextIO
 
-from fcm.fcm_file import FcmFile
+from .fcm_file import FcmFile
 
 
 def generate_svg(out: TextIO, data: FcmFile):

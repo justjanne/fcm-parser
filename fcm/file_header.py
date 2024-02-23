@@ -1,8 +1,8 @@
 from enum import IntEnum
 from typing import NamedTuple
 
-from fcm.util import read_bytes, read_utf16_str, read_uint, DEBUG_assert_expected
-from fcm.util_debug import debug_value
+from ._util import read_bytes, read_utf16_str, read_uint, DEBUG_assert_expected
+from ._util_debug import debug_value
 
 
 class FileType(IntEnum):

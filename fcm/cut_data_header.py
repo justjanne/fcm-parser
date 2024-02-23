@@ -1,8 +1,8 @@
 from typing import NamedTuple
 
-from fcm.file_header import FileType
-from fcm.util import read_uint
-from fcm.util_debug import debug_value
+from ._util import read_uint
+from ._util_debug import debug_value
+from .file_header import FileType
 
 
 class CutDataHeader(NamedTuple):
