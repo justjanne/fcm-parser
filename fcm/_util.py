@@ -29,16 +29,3 @@ def read_f32(buffer: bytes, length: int, offset: int = 0) -> [float, bytes]:
 def read_utf16_str(buffer: bytes, offset: int = 0) -> [int, bytes]:
     offset, length = read_uint(buffer, 1, offset)
     return read_bytes(buffer, length * 2, offset)
-
-
-def DEBUG_assert_expected(context: str, value, expected: list):
-    if type(value) is int:
-        value = 0xFFFFFFFF & value
-    if value not in expected:
-        friendly_value = str(value)
-        if type(value) is int:
-            friendly_value = "0x" + int.to_bytes(value, 4, byteorder='big', signed=False).hex()
-        print("Unexpected value for {0}: {1}".format(
-            context,
-            friendly_value
-        ), file=sys.stderr)
