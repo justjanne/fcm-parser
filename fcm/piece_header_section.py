@@ -32,7 +32,7 @@ class PieceHeaderSection(NamedTuple):
     expansion_limit_value: int
     reduction_limit_value: int
     restrictions: PieceRestrictions
-    unknown7: int
+    unknown4: int
     label: str | None
     paths: list[PathHeaderSection]
 
@@ -65,9 +65,9 @@ def read_piece_header_section(buffer: bytes, offset: int = 0) -> tuple[int, Piec
 
     offset, restrictions = read_uint(buffer, 4, offset)
 
-    # setting this to 0x00000011 fails parsing?
-    offset, unknown7 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("piece unknown7", unknown7, [0x00000004])
+    # modifying this fails parsing, probably offset/size/etc?
+    offset, unknown4 = read_uint(buffer, 4, offset)
+    DEBUG_assert_expected("piece unknown4", unknown4, [0x00000004])
 
     offset, label_info = read_bool(buffer, 1, offset)
     offset, label = read_bytes(buffer, 3, offset)
@@ -92,7 +92,7 @@ def read_piece_header_section(buffer: bytes, offset: int = 0) -> tuple[int, Piec
         expansion_limit_value,
         reduction_limit_value,
         restrictions,
-        unknown7,
+        unknown4,
         label,
         paths
     )

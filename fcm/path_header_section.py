@@ -29,31 +29,22 @@ class PathHeaderSection(NamedTuple):
     # FIXME
     unknown1: int
     unknown2: int
-    unknown3: int
-    unknown4: int
     tool: PathTool
     line_segment: LineSegmentSection | None
     rhinestone_segments: list[SegmentLine]
 
 
 def read_path_header_section(buffer: bytes, offset: int = 0) -> tuple[int, PathHeaderSection]:
+    # length of path in bytes
+    offset, _ = read_uint(buffer, 4, offset)
     offset, unknown1 = read_uint(buffer, 4, offset)
-    offset, unknown2 = read_uint(buffer, 4, offset)
-    DEBUG_assert_expected("path unknown2", unknown2, [0x00000004])
+    DEBUG_assert_expected("path unknown1", unknown1, [0x00000004])
 
     offset, tool = read_path_tool(buffer, offset)
     offset, outline_count = read_uint(buffer, 4, offset)
     offset, rhinestone_count = read_uint(buffer, 4, offset)
 
-    offset, unknown3 = read_uint(buffer, 2, offset)
-    DEBUG_assert_expected("path unknown3", unknown3, [
-        0x0000, 0x008b, 0x008c, 0x00b3, 0x00b4, 0x0113, 0x0112, 0x00eb,
-    ])
-    # 0x0000 means closed, 0x3f00 means it's an open path. But why?
-    offset, unknown4 = read_uint(buffer, 2, offset)
-    DEBUG_assert_expected("path unknown4", unknown4, [
-        0x0000, 0x3f00
-    ])
+    offset, unknown2 = read_uint(buffer, 4, offset)
 
     line_segment = None
     if outline_count > 0:
@@ -63,11 +54,10 @@ def read_path_header_section(buffer: bytes, offset: int = 0) -> tuple[int, PathH
     for i in range(0, rhinestone_count):
         offset, rhinestone = read_segment_line(buffer, offset)
         rhinestones.append(rhinestone)
+
     return offset, PathHeaderSection(
         unknown1,
         unknown2,
-        unknown3,
-        unknown4,
         tool,
         line_segment,
         rhinestones,
