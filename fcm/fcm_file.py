@@ -13,7 +13,7 @@ class FcmFile(NamedTuple):
 
 def read_fcm_file(buffer: bytes, offset: int = 0) -> FcmFile:
     offset, file_header = read_file_header(buffer, offset)
-    offset, cut_data = read_cut_data_header(file_header.file_type, buffer, offset)
+    offset, cut_data = read_cut_data_header(buffer, offset)
     offset, piece_table = read_piece_table_header(buffer, offset)
     return FcmFile(
         file_header,

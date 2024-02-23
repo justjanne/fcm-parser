@@ -43,13 +43,13 @@ def read_piece_header_section(buffer: bytes, offset: int = 0) -> tuple[int, Piec
     debug_value("piece unknown1", unknown1.hex())
 
     offset, unknown2 = read_bytes(buffer, 4, offset)
-    debug_value("piece unknown2", unknown1.hex())
+    debug_value("piece unknown2", unknown2.hex())
 
     offset, width = read_uint(buffer, 4, offset)
     offset, height = read_uint(buffer, 4, offset)
 
     offset, unknown3 = read_bytes(buffer, 4, offset)
-    debug_value("piece unknown3", unknown1.hex())
+    debug_value("piece unknown3", unknown3.hex())
 
     offset, transformA11 = read_f32(buffer, 4, offset)
     offset, transformA21 = read_f32(buffer, 4, offset)

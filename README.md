@@ -5,12 +5,21 @@ free software implementation of brother's FCM format.
 
 The data types used by the web app are documented in [fcm_format.txt].
 
-Current Status:
+## Features
 
-- Can read and parse all FCM files I've found so far  
-  **If you discover a file that fails to parse, please send it to me!**
-- Should be enough to build a rudimentary fcm viewer
-- 27 unknown parameters left to discover
+- Read any FCM file 
+- Convert any FCM file to SVG
+
+## Roadmap
+
+- Allow writing FCM files
+- Rewrite the parser and serializer in Rust
+- 5 parameters left to discover:
+  - PieceHeaderSection[0:4] (always 00000000)
+  - PieceHeaderSection[4:8] (always 00000000)
+  - PieceHeaderSection[16:20] (always 01000000)
+  - PathHeaderSection[0:4] (always 04000000)
+  - PathHeaderSection[16:20] (varies wildly)
 
 SVG to FCM:
 - https://stackoverflow.com/questions/734076/how-to-best-approximate-a-geometrical-arc-with-a-bezier-curve

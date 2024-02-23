@@ -11,6 +11,7 @@ if __name__ == "__main__":
                 if filename.endswith(".fcm"):
                     convert_fcm(
                         "samples/{0}/{1}".format(directory, filename),
-                        "generated/{0}_{1}.svg".format(directory, filename.removesuffix(".fcm"))
+                        "generated/{0}_{1}.svg".format(directory, filename.removesuffix(".fcm")),
+                        "generated/{0}_{1}.bmp".format(directory, filename.removesuffix(".fcm"))
                     )
     debug_print()
