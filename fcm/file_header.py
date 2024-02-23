@@ -1,7 +1,6 @@
 from typing import NamedTuple
 
-from ._util import read_bytes, read_utf16_str, read_uint
-from ._util_debug import debug_value
+from ._util import read_bytes, read_utf16_str, read_uint, read_bool
 
 
 class FileHeader(NamedTuple):
@@ -17,6 +16,7 @@ class FileHeader(NamedTuple):
     thumbnail_bytes: bytes
     storage_machine_model_id: str
     save_machine_ver: int
+    print_to_cut: bool
 
 
 def read_file_header(buffer: bytes, offset: int = 0) -> tuple[int, FileHeader]:
@@ -27,24 +27,27 @@ def read_file_header(buffer: bytes, offset: int = 0) -> tuple[int, FileHeader]:
 
     # dynamic file header
     offset, header_length = read_uint(buffer, 4, offset)
-    offset, short_name = read_bytes(buffer, 8, offset)
+    limit = offset + header_length
+
+    offset, short_name = read_bytes(buffer, 8, offset, limit)
     short_name = short_name.decode("ascii").split("\x00", maxsplit=1)[0]
-    offset, long_name = read_utf16_str(buffer, offset)
+    offset, long_name = read_utf16_str(buffer, offset, limit)
     long_name = long_name.decode("utf-16-le")
-    offset, author_name = read_utf16_str(buffer, offset)
+    offset, author_name = read_utf16_str(buffer, offset, limit)
     author_name = author_name.decode("utf-16-le")
-    offset, copyright = read_utf16_str(buffer, offset)
+    offset, copyright = read_utf16_str(buffer, offset, limit)
     copyright = copyright.decode("utf-16-le")
 
-    offset, thumbnail_block_size_width = read_uint(buffer, 1, offset)
-    offset, thumbnail_block_size_height = read_uint(buffer, 1, offset)
-    offset, thumbnail_byte_length = read_uint(buffer, 4, offset)
-    offset, thumbnail_bytes = read_bytes(buffer, thumbnail_byte_length, offset)
+    offset, thumbnail_block_size_width = read_uint(buffer, 1, offset, limit)
+    offset, thumbnail_block_size_height = read_uint(buffer, 1, offset, limit)
+    offset, thumbnail_byte_length = read_uint(buffer, 4, offset, limit)
+    offset, thumbnail_bytes = read_bytes(buffer, thumbnail_byte_length, offset, limit)
 
-    offset, storage_machine_model_id = read_bytes(buffer, 4, offset)
-    offset, save_machine_ver = read_uint(buffer, 4, offset)
+    offset, storage_machine_model_id = read_bytes(buffer, 4, offset, limit)
+    offset, save_machine_ver = read_uint(buffer, 4, offset, limit)
+    offset, print_to_cut = read_bool(buffer, 4, offset, limit)
 
-    return offset, FileHeader(
+    return limit, FileHeader(
         format_identifier,
         file_version,
         content_id,
@@ -57,4 +60,5 @@ def read_file_header(buffer: bytes, offset: int = 0) -> tuple[int, FileHeader]:
         thumbnail_bytes,
         storage_machine_model_id,
         save_machine_ver,
+        print_to_cut
     )
