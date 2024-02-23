@@ -31,18 +31,7 @@ class PathHeaderSection(NamedTuple):
     unknown2: int
     unknown3: int
     unknown4: int
-    is_open: bool
-    path_to_cut: bool
-    path_to_draw: bool
-    target_seam_allowance: bool
-    rhinestone: bool
-    paint_the_face_when_drawing: bool
-    correction_by_scanner_correction_value: bool
-    add_additional_line_at_draw: bool
-    is_perforating: bool
-    is_emboss: bool
-    is_foil: bool
-    is_only_for_draw: bool
+    tool: PathTool
     line_segment: LineSegmentSection | None
     rhinestone_segments: list[SegmentLine]
 
@@ -74,36 +63,12 @@ def read_path_header_section(buffer: bytes, offset: int = 0) -> tuple[int, PathH
     for i in range(0, rhinestone_count):
         offset, rhinestone = read_segment_line(buffer, offset)
         rhinestones.append(rhinestone)
-
-    is_open = PathTool.PATH_OPEN in tool
-    path_to_cut = PathTool.TOOL_CUT in tool
-    path_to_draw = PathTool.TOOL_DRAW in tool
-    target_seam_allowance = PathTool.SEAM_ALLOWANCE in tool
-    rhinestone = PathTool.TOOL_RHINESTONE in tool
-    paint_the_face_when_drawing = PathTool.FILL in tool
-    correction_by_scanner_correction_value = PathTool.AUTO_ALIGN in tool
-    add_additional_line_at_draw = False  # ToolFlag.ADDITIONAL_OUTLINE in tool
-    is_perforating = PathTool.TOOL_PERFORATING in tool
-    is_emboss = PathTool.TOOL_EMBOSS in tool
-    is_foil = PathTool.TOOL_FOIL in tool
-    is_only_for_draw = PathTool.TOOL_DRAW_ONLY in tool
     return offset, PathHeaderSection(
         unknown1,
         unknown2,
         unknown3,
         unknown4,
-        is_open,
-        path_to_cut,
-        path_to_draw,
-        target_seam_allowance,
-        rhinestone,
-        paint_the_face_when_drawing,
-        correction_by_scanner_correction_value,
-        add_additional_line_at_draw,
-        is_perforating,
-        is_emboss,
-        is_foil,
-        is_only_for_draw,
+        tool,
         line_segment,
         rhinestones,
     )
