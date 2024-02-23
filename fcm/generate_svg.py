@@ -1,17 +1,17 @@
 from typing import TextIO
 
-from fcm.file import FcmFile
+from fcm.fcm_file import FcmFile
 
 
 def generate_svg(out: TextIO, data: FcmFile):
     out.write('<svg viewBox="0 0 {0} {1}" xmlns="http://www.w3.org/2000/svg">\n'.format(
-        data.cut_data.cut_width,
-        data.cut_data.cut_height,
-        data.cut_data.cut_width / 100.0,
-        data.cut_data.cut_height / 100.0
+        data.cut_data_header.cut_width,
+        data.cut_data_header.cut_height,
+        data.cut_data_header.cut_width / 100.0,
+        data.cut_data_header.cut_height / 100.0
     ))
     out.write('  <rect x="0" y="0" width="100%" height="100%" fill="#eeeeee" />\n')
-    for piece in data.cut_data.pieces:
+    for piece in data.piece_table_header.pieces:
         out.write('  <g {6} transform="matrix({0} {1} {2} {3} {4} {5})">\n'.format(
             piece.transform[0], piece.transform[1], piece.transform[2],
             piece.transform[3], piece.transform[4], piece.transform[5],

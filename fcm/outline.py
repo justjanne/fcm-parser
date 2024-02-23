@@ -1,28 +1,38 @@
-from typing import NamedTuple, List, Union, Tuple
+from enum import IntFlag
+from typing import NamedTuple
 
-from fcm.point_bezier import BezierPoint, read_point_bezier
-from fcm.point_line import LinePoint, read_point_line
-from fcm.util import read_uint
+from fcm.segment_bezier import SegmentBezier, read_segment_bezier
+from fcm.segment_line import SegmentLine, read_segment_line
+from fcm.util import read_uint, read_bytes
+
+
+class OutlineType(IntFlag):
+    LINE = 0
+    BEZIER = 1
+
+
+def read_outline_type(buffer: bytes, offset: int = 0) -> tuple[int, OutlineType]:
+    offset, data = read_bytes(buffer, 4, offset)
+    return offset, OutlineType.from_bytes(data, byteorder='little', signed=False)
 
 
 class Outline(NamedTuple):
     type: int
-    points: List[Union[LinePoint, BezierPoint]]
+    points: list[SegmentLine | SegmentBezier]
 
 
-def read_outline(buffer: bytes, offset: int = 0) -> Tuple[int, Outline]:
-    offset, outline_type = read_uint(buffer, 4, offset)
+def read_outline(buffer: bytes, offset: int = 0) -> tuple[int, Outline]:
+    offset, outline_type = read_outline_type(buffer, offset)
     offset, point_count = read_uint(buffer, 4, offset)
 
     points = []
     for i in range(0, point_count):
-        if outline_type == 0:
-            offset, point = read_point_line(buffer, offset)
-        elif outline_type == 1:
-            offset, point = read_point_bezier(buffer, offset)
-        else:
-            raise Exception("Unknowns outline type: " + str(outline_type))
-        points.append(point)
+        if outline_type == OutlineType.LINE:
+            offset, point = read_segment_line(buffer, offset)
+            points.append(point)
+        elif outline_type == OutlineType.BEZIER:
+            offset, point = read_segment_bezier(buffer, offset)
+            points.append(point)
 
     return offset, Outline(
         outline_type,

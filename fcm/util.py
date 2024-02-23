@@ -6,6 +6,11 @@ def read_bytes(buffer: bytes, length: int, offset: int = 0) -> [int, bytes]:
     return offset + length, buffer[offset:offset + length]
 
 
+def read_bool(buffer: bytes, length: int, offset: int = 0) -> [int, bytes]:
+    offset, data = read_bytes(buffer, length, offset)
+    return offset, int.from_bytes(data, byteorder='little', signed=False) != 0
+
+
 def read_int(buffer: bytes, length: int, offset: int = 0) -> [int, bytes]:
     offset, data = read_bytes(buffer, length, offset)
     return offset, int.from_bytes(data, byteorder='little', signed=True)
@@ -37,5 +42,3 @@ def DEBUG_assert_expected(context: str, value, expected: list):
             context,
             friendly_value
         ), file=sys.stderr)
-
-
