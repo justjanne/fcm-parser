@@ -1,23 +1,20 @@
 from typing import NamedTuple
 
-from ._util import read_int
+from .point import read_point, Point
 
 
 class SegmentBezier(NamedTuple):
-    control1: tuple[int, int]
-    control2: tuple[int, int]
-    end: tuple[int, int]
+    control1: Point
+    control2: Point
+    end: Point
 
 
 def read_segment_bezier(buffer: bytes, offset: int = 0) -> tuple[int, SegmentBezier]:
-    offset, control1x = read_int(buffer, 4, offset)
-    offset, control1y = read_int(buffer, 4, offset)
-    offset, control2x = read_int(buffer, 4, offset)
-    offset, control2y = read_int(buffer, 4, offset)
-    offset, endx = read_int(buffer, 4, offset)
-    offset, endy = read_int(buffer, 4, offset)
+    offset, control1 = read_point(buffer, offset)
+    offset, control2 = read_point(buffer, offset)
+    offset, end = read_point(buffer, offset)
     return offset, SegmentBezier(
-        (control1x, control1y),
-        (control2x, control2y),
-        (endx, endy)
+        control1,
+        control2,
+        end
     )

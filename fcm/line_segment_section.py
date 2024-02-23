@@ -1,17 +1,16 @@
 from typing import NamedTuple
 
-from ._util import read_int
 from .outline import read_outline, Outline
+from .point import read_point, Point
 
 
 class LineSegmentSection(NamedTuple):
-    start: tuple[int, int]
+    start: Point
     outlines: list[Outline]
 
 
 def read_line_segment_section(buffer: bytes, count: int, offset: int = 0) -> tuple[int, LineSegmentSection]:
-    offset, startx = read_int(buffer, 4, offset)
-    offset, starty = read_int(buffer, 4, offset)
+    offset, start = read_point(buffer, offset)
 
     outlines = []
     for i in range(0, count):
@@ -19,6 +18,6 @@ def read_line_segment_section(buffer: bytes, count: int, offset: int = 0) -> tup
         outlines.append(outline)
 
     return offset, LineSegmentSection(
-        (startx, starty),
+        start,
         outlines
     )

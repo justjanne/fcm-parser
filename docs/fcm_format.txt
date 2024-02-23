@@ -1,103 +1,169 @@
 fcm_file {
-    1 file_header {
-        1 format_identifier: string = ""
-        2 file_version: string
-        3 content_id: u32
-        4 short_name: u8[]
-        5 long_name: u8[]
-        6 author_name: u8[]
-        7 copyright: u8[]
-        8 thumbnail_block_size_width: i32
-        9 thumbnail_block_size_height: i32
-        10 thumbnail_bytes: u8[]
-        11 storage_machine_model_id: string = ""
-        12 save_machine_ver: u32
-        13 file_type: u32
+    file_header: {
+        format_identifier: uint8[4]
+        file_version: uint8[4]
+        content_id: uint32
+        // After header_length all further values are optional.
+        // To figure out if there's more to read track the number of bytes read since header_length
+        header_length: uint32
+        // null-terminated ascii
+        short_name?: uint8[8]
+        // utf-16
+        long_name?: {
+            codepoint_count: uint8
+            codepoints: uint16[]
+        }
+        // utf-16
+        author_name?: {
+            codepoint_count: uint8
+            codepoints: uint16[]
+        }
+        // utf-16
+        copyright?: {
+            codepoint_count: uint8
+            codepoints: uint16[]
+        }
+        thumbnail_block_size_width?: uint8
+        thumbnail_block_size_height?: uint8
+        // Windows Bitmap Image (.bmp)
+        thumbnail?: {
+            length: uint32
+            data: uint8[]
+        }
+        storage_machine_model_id?: uint
+        save_machine_ver?: uint32
+        print_to_cut?: bool32
     }
-    2 cut_data_header {
-        1 cutting_mat_id: u32
-        2 cut_area_width: u32
-        3 cut_area_height: u32
-        4 seam_allowance_width: u32
-        6 align_mark_needed: boolean
-        7 align_flag: u32
-        8 align_mark_count: u32
-        9 align_mark1_x: i32
-        10 align_mark1_y: i32
-        11 align_mark2_x: i32
-        12 align_mark2_y: i32
-        13 align_mark3_x: i32
-        14 align_mark3_y: i32
-        15 align_mark4_x: i32
-        16 align_mark4_y: i32
-    }
-    3 piece_table_header {
-        6 piece_header_section[]: piece_header_section {
-            1 piece_width_before_affine_transformation: i32
-            2 piece_height_before_affine_transformation: i32
-            3 affine_transformation_matrix_a11: f32
-            4 affine_transformation_matrix_a21: f32
-            5 affine_transformation_matrix_a12: f32
-            6 affine_transformation_matrix_a22: f32
-            7 affine_transformation_matrix_a13: f32
-            8 affine_transformation_matrix_a23: f32
-            9 expansion_limit_value: i32
-            10 reduction_limit_value: i32
-            11 label_info: i32
-            12 piece_label: i32[] (packed)
-            13 license_design: bool
-            14 seam_allowance: bool
-            15 prohibition_of_seam_allowance_setting: bool
-            16 no_aspect_ratio_change_prohibited: bool
-            17 judge_by_using_perfect_mask_at_auto_layout: bool
-            18 test_pattern: bool
-            19 prohibition_of_edit: bool
-            20 prohibition_of_tool: bool
-            21 path_header_section: path_header_section[] {
-                1 open_or_close_path: bool
-                2 path_to_cut: bool
-                3 path_to_draw: bool
-                4 target_seam_allowance: bool
-                5 rhinestone: bool
-                6 paint_the_face_when_drawing: bool
-                7 correction_by_scanner_correction_value: bool
-                8 add_additional_line_at_draw: bool
-                9 line_segment: line_segment_section[] {
-                    1 start_point_coordiantes_x: i32
-                    2 start_point_coordiantes_y: i32
-                    3 outline_list: outline[] {
-                        1 is_line: bool
-                        2 is_bezier: bool
-                        3 line_or_bezier: segment_line_or_bezier[] {
-                            1 line: segment_line? {
-                                1 end_x: i32
-                                2 end_y: i32
-                            }
-                            2 bezier: segment_bezier? {
-                                1 control1_x: i32
-                                2 control1_y: i32
-                                3 control2_x: i32
-                                4 control2_y: i32
-                                5 end_x: i32
-                                6 end_y: i32
-                            }
-                        }
-                    }
-                }
-                10 rhinestone_segment: rhinestone_segment_section[] {
-                    1 attribute: u32
-                    2 count: u32
-                    3 radius: u32
-                    4 point: point[] {
-                        1 x: i32
-                        2 y: i32
-                    }
-                }
-                11 is_perforating: bool
-                12 is_emboss: bool
-                13 is_foil: bool
-                14 is_only_for_draw: bool
+    cut_data_header: {
+        // see file_type enum
+        file_type: uint32
+        mat_id: uint32
+        cut_width: uint32
+        cut_height: uint32
+        seam_allowance_width: uint32
+        // align_flag and align_marks only exist if file_type is PRINTTOCUT
+        align_needed?: bool32
+        align_marks?: {
+            // no matter how many are defined, data is -- if present -- always 32 bytes long
+            count: uint32
+            data: []{
+                x: uint32
+                y: uint32
             }
         }
     }
+    piece_table_header: {
+        piece_offsets: {
+            count: uint32
+            data: uint32[]
+        }
+        piece_table_length: uint32
+        piece_ids: {
+            count: uint32
+            data: uint16[]
+        }
+        pieces: []{
+            padding: uint64
+            width: uint32
+            height: uint32
+            has_transform: bool32
+            // only exist if has_transform is true
+            transformA11?: float32
+            transformA21?: float32
+            transformA22?: float32
+            transformA13?: float32
+            transformA12?: float32
+            transformA23?: float32
+            expansion_limit_value: uint32
+            reduction_limit_value: uint32
+            // see piece_restrictions_flags enum
+            restriction_flags: uint32
+            label: {
+                length: uint32
+                // If the label has any content, the first byte is set to 0x01
+                data: u8[]
+            }
+            paths: {
+                count: uint32
+                data: []{
+                    // see path_flags enum
+                    flags: {
+                        length: uint32
+                        data: u8[]
+                    }
+                    outline_count: uint32
+                    rhinestone_count: uint32
+                    rhinestone_diameter: uint32
+                    // line_segment only exists if outline_count > 0
+                    line_segment?: {
+                        start: {
+                            x: int32
+                            y: int32
+                        }
+                        outlines: []{
+                            // see outline_type enum
+                            outline_type: uint32
+                            segment: {
+                                count: uint32
+                                data: []{
+                                    // control points only exist if outline_type is BEZIER
+                                    control1?: {
+                                        x: int32,
+                                        y: int32
+                                    }
+                                    control2?: {
+                                        x: int32,
+                                        y: int32
+                                    }
+                                    end?: {
+                                        x: int32,
+                                        y: int32
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    rhinestones: []{
+                        x: int32
+                        y: int32
+                    }
+                }
+            }
+        }
+    }
+}
+
+file_type {
+    CUT = 0x10
+    PRINTTOCUT = 0x38
+}
+
+piece_restriction_flags {
+    LICENSE_DESIGN = 0x0001
+    SEAM_ALLOWANCE = 0x0002
+    PROHIBITION_OF_SEAM_ALLOWANCE_SETTING = 0x0004
+    NO_ASPECT_RATIO_CHANGE_PROHIBITED = 0x0020
+    JUDGE_BY_USING_PERFECT_MASK_AT_AUTO_LAYOUT = 0x0020
+    TEST_PATTERN = 0x0040
+    PROHIBITION_OF_EDIT = 0x0080
+    PROHIBITION_OF_TOOL = 0x0100
+}
+
+path_flags {
+    PATH_OPEN = 0x0001
+    TOOL_CUT = 0x0002
+    TOOL_DRAW = 0x0004
+    SEAM_ALLOWANCE = 0x0008
+    TOOL_RHINESTONE = 0x0010
+    FILL = 0x0020
+    AUTO_ALIGN = 0x0040
+    TOOL_DRAW_ONLY = 0x1000
+    TOOL_EMBOSS = 0x2000
+    TOOL_FOIL = 0x4000
+    TOOL_PERFORATING = 0x8000
+}
+
+outline_type {
+    LINE = 0x00
+    BEZIER = 0x01
 }

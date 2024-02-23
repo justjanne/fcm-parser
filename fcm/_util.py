@@ -1,5 +1,4 @@
 import struct
-import sys
 
 
 def read_bytes(buffer: bytes, length: int, offset: int = 0, limit: int = -1) -> [int, bytes]:

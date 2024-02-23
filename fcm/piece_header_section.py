@@ -3,7 +3,6 @@ from enum import IntFlag
 from typing import NamedTuple
 
 from ._util import read_uint, read_f32, read_bytes, read_bool
-from ._util_debug import debug_value
 from .path_header_section import PathHeaderSection, read_path_header_section
 
 
@@ -59,7 +58,7 @@ def read_piece_header_section(buffer: bytes, offset: int = 0) -> tuple[int, Piec
 
     offset, expansion_limit_value = read_uint(buffer, 4, offset)
     offset, reduction_limit_value = read_uint(buffer, 4, offset)
-    offset, restrictions = read_uint(buffer, 4, offset)
+    offset, restrictions = read_piece_restrictions(buffer, offset)
 
     offset, label_length = read_uint(buffer, 4, offset)
     offset, label_data = read_bytes(buffer, label_length, offset)

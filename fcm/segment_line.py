@@ -1,15 +1,14 @@
 from typing import NamedTuple
 
-from ._util import read_int
+from .point import read_point, Point
 
 
 class SegmentLine(NamedTuple):
-    end: tuple[int, int]
+    end: Point
 
 
 def read_segment_line(buffer: bytes, offset: int = 0) -> tuple[int, SegmentLine]:
-    offset, endx = read_int(buffer, 4, offset)
-    offset, endy = read_int(buffer, 4, offset)
+    offset, end = read_point(buffer, offset)
     return offset, SegmentLine(
-        (endx, endy)
+        end
     )

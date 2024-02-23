@@ -20,20 +20,20 @@ def generate_svg(out: TextIO, data: FcmFile):
         for path in piece.paths:
             if path.line_segment:
                 path_data = "M {0},{1}".format(
-                    path.line_segment.start[0], path.line_segment.start[1]
+                    path.line_segment.start.x, path.line_segment.start.y
                 )
                 for outline in path.line_segment.outlines:
                     if outline.type == OutlineType.LINE:
-                        for point in outline.points:
+                        for point in outline.segments:
                             path_data += "L {0},{1}".format(
-                                point.end[0], point.end[1]
+                                point.end.x, point.end.y
                             )
                     elif outline.type == OutlineType.BEZIER:
-                        for point in outline.points:
+                        for point in outline.segments:
                             path_data += "C {0} {1}, {2} {3}, {4} {5}".format(
-                                point.control1[0], point.control1[1],
-                                point.control2[0], point.control2[1],
-                                point.end[0], point.end[1]
+                                point.control1.x, point.control1.y,
+                                point.control2.x, point.control2.y,
+                                point.end.x, point.end.y
                             )
                 out.write('    <path fill="none" '
                           'stroke="#000000" '
@@ -46,7 +46,7 @@ def generate_svg(out: TextIO, data: FcmFile):
                           'stroke-width="1" '
                           'vector-effect="non-scaling-stroke" '
                           'cx="{0}" cy="{1}" r="{2}mm" />\n'.format(
-                    rhinestone.end[0], rhinestone.end[1], path.rhinestone_diameter / 2.0
+                    rhinestone.x, rhinestone.y, path.rhinestone_diameter / 2.0
                 ))
         out.write("  </g>\n")
     out.write("</svg>\n")

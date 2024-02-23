@@ -2,9 +2,8 @@ from enum import IntFlag
 from typing import NamedTuple
 
 from ._util import read_uint, read_bytes
-from ._util_debug import debug_value
 from .line_segment_section import read_line_segment_section, LineSegmentSection
-from .segment_line import read_segment_line, SegmentLine
+from .point import read_point, Point
 
 
 class PathTool(IntFlag):
@@ -31,14 +30,14 @@ class PathHeaderSection(NamedTuple):
     rhinestone_diameter: int
     tool: PathTool
     line_segment: LineSegmentSection | None
-    rhinestone_segments: list[SegmentLine]
+    rhinestone_segments: list[Point]
 
 
 def read_path_header_section(buffer: bytes, offset: int = 0) -> tuple[int, PathHeaderSection]:
     offset, tool = read_path_tool(buffer, offset)
     offset, outline_count = read_uint(buffer, 4, offset)
     offset, rhinestone_count = read_uint(buffer, 4, offset)
-    offset, rhinestone_radius = read_uint(buffer, 4, offset)
+    offset, rhinestone_diameter = read_uint(buffer, 4, offset)
 
     line_segment = None
     if outline_count > 0:
@@ -46,11 +45,11 @@ def read_path_header_section(buffer: bytes, offset: int = 0) -> tuple[int, PathH
 
     rhinestones = []
     for i in range(0, rhinestone_count):
-        offset, rhinestone = read_segment_line(buffer, offset)
+        offset, rhinestone = read_point(buffer, offset)
         rhinestones.append(rhinestone)
 
     return offset, PathHeaderSection(
-        rhinestone_radius,
+        rhinestone_diameter,
         tool,
         line_segment,
         rhinestones,

@@ -18,23 +18,23 @@ def read_outline_type(buffer: bytes, offset: int = 0) -> tuple[int, OutlineType]
 
 class Outline(NamedTuple):
     type: int
-    points: list[SegmentLine | SegmentBezier]
+    segments: list[SegmentLine | SegmentBezier]
 
 
 def read_outline(buffer: bytes, offset: int = 0) -> tuple[int, Outline]:
     offset, outline_type = read_outline_type(buffer, offset)
-    offset, point_count = read_uint(buffer, 4, offset)
+    offset, segment_count = read_uint(buffer, 4, offset)
 
-    points = []
-    for i in range(0, point_count):
+    segments = []
+    for i in range(0, segment_count):
         if outline_type == OutlineType.LINE:
             offset, point = read_segment_line(buffer, offset)
-            points.append(point)
+            segments.append(point)
         elif outline_type == OutlineType.BEZIER:
             offset, point = read_segment_bezier(buffer, offset)
-            points.append(point)
+            segments.append(point)
 
     return offset, Outline(
         outline_type,
-        points
+        segments
     )

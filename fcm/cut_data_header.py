@@ -1,7 +1,8 @@
 from enum import IntEnum
 from typing import NamedTuple
 
-from ._util import read_uint, read_bytes
+from ._util import read_uint, read_bytes, read_bool
+from .point import read_point, Point
 
 
 class FileType(IntEnum):
@@ -20,8 +21,8 @@ class CutDataHeader(NamedTuple):
     cut_width: int
     cut_height: int
     seam_allowance_width: int
-    align_flag: int
-    align_marks: list[tuple[int, int]]
+    align_needed: bool
+    align_marks: list[Point]
 
 
 def read_cut_data_header(buffer: bytes, offset: int = 0) -> tuple[int, CutDataHeader]:
@@ -31,16 +32,15 @@ def read_cut_data_header(buffer: bytes, offset: int = 0) -> tuple[int, CutDataHe
     offset, cut_height = read_uint(buffer, 4, offset)
     offset, seam_allowance_width = read_uint(buffer, 4, offset)
 
-    align_flag = 0
-    align_marks: list[tuple[int, int]] = []
+    align_needed = False
+    align_marks = []
     if file_type == FileType.PRINT_TO_CUT:
-        offset, align_flag = read_uint(buffer, 4, offset)
+        offset, align_needed = read_bool(buffer, 4, offset)
         offset, align_mark_count = read_uint(buffer, 4, offset)
         for i in range(0, 4):
-            offset, align_mark_x = read_uint(buffer, 4, offset)
-            offset, align_mark_y = read_uint(buffer, 4, offset)
+            offset, align_mark = read_point(buffer, offset)
             if i < align_mark_count:
-                align_marks.append((align_mark_x, align_mark_y))
+                align_marks.append(align_mark)
 
     return offset, CutDataHeader(
         file_type,
@@ -48,6 +48,6 @@ def read_cut_data_header(buffer: bytes, offset: int = 0) -> tuple[int, CutDataHe
         cut_width,
         cut_height,
         seam_allowance_width,
-        align_flag,
+        align_needed,
         align_marks
     )
